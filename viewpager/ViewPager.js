@@ -55,6 +55,16 @@ export default class ViewPager extends Component {
         this.setPageWithoutAnimation = this.setPageWithoutAnimation.bind(this)
         this.setPage = this.setPage.bind(this)
         this.state = {width: 0, height: 0, page: props.initialPage}
+        this._timestamp = new Date().getTime()
+    }
+
+    componentWillReceiveProps (nextProps) {
+      if (Platform.OS === 'android' && nextProps.autoPlayEnable && !this.props.autoPlayEnable) {
+          this._tempTimerId = setTimeout(() => {
+            this._timestamp = new Date().getTime()
+            clearTimeout(this._tempTimerId)
+          }, this.props.autoPlayEnable)
+      }
     }
 
     render () {
@@ -63,7 +73,8 @@ export default class ViewPager extends Component {
                 {...this.props}
                 scrollEnabled={this.props.horizontalScroll ? true : false}
                 ref={VIEWPAGER_REF}
-                key={this.props.children ? this.props.children.length : 0}
+                // key={this.props.children ? this.props.children.length : 0}
+                key={this._timestamp}
                 onPageScroll={this._onPageScrollOnAndroid}
                 onPageSelected={this._onPageSelectedOnAndroid}
             />
